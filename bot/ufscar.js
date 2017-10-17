@@ -149,7 +149,8 @@ class UfscarMenu {
     };
 
     let counter = 0;
-    let restElements = '';
+    let title = '';
+    let subtitle = '';
 
     for (let i = 0; i < this.menuContentsWithImages.length; i += 1) {
       if (this.fbMenuContents.attachment.payload.elements.length >= 4) break;
@@ -161,15 +162,18 @@ class UfscarMenu {
         });
       } else if (counter < 2) {
         counter += 1;
-        restElements += `${this.menuContentsWithImages[i].title} ${this.menuContentsWithImages[i].content}\n`;
+        title += `${this.menuContentsWithImages[i].title}`;
+        if (counter == 1) title += '/';
+        subtitle += `${this.menuContentsWithImages[i].title} ${this.menuContentsWithImages[i].content}\n`;
       } else {
         counter = 0;
-        this.fbMenuContents.attachment.payload.elements.push({ title: '.', subtitle: restElements });
-        restElements = '';
+        this.fbMenuContents.attachment.payload.elements.push({ title, subtitle });
+        title = '';
+        subtitle = '';
       }
     }
 
-    if (restElements !== '' && this.fbMenuContents.attachment.payload.elements.length < 4) { this.fbMenuContents.attachment.payload.elements.push({ title: '.', subtitle: restElements }); }
+    if (subtitle !== '' && this.fbMenuContents.attachment.payload.elements.length < 4) { this.fbMenuContents.attachment.payload.elements.push({ title, subtitle }); }
 
     return this.fbMenuContents;
   }
