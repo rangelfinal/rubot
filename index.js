@@ -1,8 +1,10 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const { getNextMenu } = require('./ufscar');
 
 const app = express();
 
+app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 5000));
 
 app.post('/fulfillment', (req, res) => {
