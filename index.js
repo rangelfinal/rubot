@@ -8,8 +8,6 @@ app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 5000));
 
 app.post('/fulfillment', (req, res) => {
-  console.dir(req);
-  console.dir(res);
   console.log(`Request headers: ${JSON.stringify(req.headers)}`);
   console.log(`Request body: ${JSON.stringify(req.body)}`);
 
@@ -53,6 +51,7 @@ app.post('/fulfillment', (req, res) => {
 
   const actionHandlers = {
     'input.cardapio': () => {
+      sendResponse('Ok! Buscando cardápio...');
       getNextMenu().then((menu) => {
         for (let i = 0; i < menu.length; i += 1) {
           sendResponse(`${menu[i].title} ${menu[i].content}\n`);
