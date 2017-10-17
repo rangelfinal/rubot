@@ -48,7 +48,7 @@ function getMenu(lunchOrDinner) {
     let mealDiv;
 
     if (lunchOrDinner === 'lunch') {
-      mealDiv = cardapioDiv.last().find('div');
+      mealDiv = cardapioDiv.first().find('div');
     } else if (lunchOrDinner === 'dinner') {
       mealDiv = cardapioDiv.last().find('div');
     } else {
