@@ -110,7 +110,7 @@ class UfscarMenu {
 
     const promises = [];
 
-    for (let i = 0; i < this.rawMenuContents.lenght; i += 1) {
+    for (let i = 0; i < this.rawMenuContents.length; i += 1) {
       if (this.rawMenuContents[i].title.indexOf('Principal') !== -1) {
         promises.push(getGoogleImage(this.rawMenuContents[i].content)
           .then((imageURL) => {
