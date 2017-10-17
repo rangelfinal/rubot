@@ -21,17 +21,17 @@ function getMenuContents(mealDiv) {
       if (content.indexOf('/')) {
         const contentArray = content.split('/');
         for (let k = 0; k < contentArray.length; k += 1) {
-          menuContents.push({title, content: contentArray[k]});
+          menuContents.push({ title, content: contentArray[k] });
         }
       } else {
-        menuContents.push({title, content});
+        menuContents.push({ title, content });
       }
     } else {
       undefinedCounter += 1;
     }
   });
 
-  if (undefinedCounter > 3) return {title: '', content: 'Desculpa, cardápio não definido 😓'};
+  if (undefinedCounter > 3) return [{ title: '', content: 'Desculpa, cardápio não definido 😓' }];
   return menuContents;
 }
 
@@ -48,7 +48,7 @@ function getMenu(lunchOrDinner) {
     let mealDiv;
 
     if (lunchOrDinner === 'lunch') {
-      mealDiv = cardapioDiv.first().find('div');
+      mealDiv = cardapioDiv.last().find('div');
     } else if (lunchOrDinner === 'dinner') {
       mealDiv = cardapioDiv.last().find('div');
     } else {
@@ -84,7 +84,7 @@ function ufscarMenu() {
     const promises = [];
     const attachments = [];
     for (let i = 0; i < menuContents.length; i += 1) {
-      promises.push(getGoogleImage(menuContents[i].content).then((imageURL) => ({
+      promises.push(getGoogleImage(menuContents[i].content).then(imageURL => ({
         title: menuContents[i].title,
         subtitle: menuContents[i].content,
         image_url: imageURL,
@@ -109,4 +109,4 @@ function ufscarMenu() {
 }
 
 
-module.exports = {getNextMenu, ufscarMenu};
+module.exports = { getNextMenu, ufscarMenu };
