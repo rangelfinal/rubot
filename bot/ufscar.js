@@ -113,19 +113,21 @@ class UfscarMenu {
     for (let i = 0; i < this.rawMenuContents.length; i += 1) {
       if (this.rawMenuContents[i].title.indexOf('Principal') !== -1) {
         promises.push(getGoogleImage(this.rawMenuContents[i].content)
-          .then((imageURL) => {
-            this.menuContentsWithImages.push({
-              title: this.rawMenuContents[i].title,
-              content: this.rawMenuContents[i].content,
-              imageURL,
-            });
-          }));
+          .then(imageURL => ({
+            title: this.rawMenuContents[i].title,
+            content: this.rawMenuContents[i].content,
+            imageURL,
+          })));
       } else {
-        this.menuContentsWithImages.push(this.rawMenuContents[i]);
+        promises.push(Promise.resolve(this.rawMenuContents[i]));
       }
     }
 
-    return Promise.all(promises).catch(() => { this.menuContentsWithImages = []; });
+    return Promise.all(promises)
+      .then((elements) => {
+        this.menuContentsWithImages = elements;
+      })
+      .catch(() => { this.menuContentsWithImages = []; });
   }
 
   getFBMenuContents() {
@@ -135,6 +137,8 @@ class UfscarMenu {
       this.fbMenuContents = null;
       return null;
     }
+
+    console.dir(this.menuContentsWithImages);
 
     this.fbMenuContents = {
       attachment: {
@@ -147,9 +151,12 @@ class UfscarMenu {
     };
 
     let counter = 0;
-    const commonElement = { title: '.', subtitle: '' };
+    let restElements = '';
 
     for (let i = 0; i < this.menuContentsWithImages.length; i += 1) {
+      console.log(i, counter);
+      console.log(restElements);
+      console.dir(this.fbMenuContents.attachment.payload.elements);
       if (this.fbMenuContents.attachment.payload.elements.length >= 4) break;
       if (this.menuContentsWithImages[i].imageURL) {
         this.fbMenuContents.attachment.payload.elements.push({
@@ -159,15 +166,15 @@ class UfscarMenu {
         });
       } else if (counter < 2) {
         counter += 1;
-        commonElement.subtitle += this.menuContentsWithImages[i].content;
+        restElements += `${this.menuContentsWithImages[i].title} ${this.menuContentsWithImages[i].content}\n`;
       } else {
         counter = 0;
-        this.fbMenuContents.attachment.payload.elements.push(commonElement);
-        commonElement.subtitle = '';
+        this.fbMenuContents.attachment.payload.elements.push({ title: '.', subtitle: restElements });
+        restElements = '';
       }
     }
 
-    if (commonElement.subtitle !== '' && this.fbMenuContents.attachment.payload.elements.length < 4) { this.fbMenuContents.attachment.payload.elements.push(commonElement); }
+    if (restElements !== '' && this.fbMenuContents.attachment.payload.elements.length < 4) { this.fbMenuContents.attachment.payload.elements.push({ title: '.', subtitle: restElements }); }
 
     return this.fbMenuContents;
   }
