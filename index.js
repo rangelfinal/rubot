@@ -56,8 +56,6 @@ app.post('/fulfillment', (req, res) => {
         for (let i = 0; i < menu.length; i += 1) {
           reply += `${menu[i].title} ${menu[i].content}\n`;
         }
-        console.log('reply:');
-        console.log(reply);
         sendResponse(reply);
       });
     },
