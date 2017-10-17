@@ -1,5 +1,5 @@
 const express = require('express');
-const { ufscarMenu, lunchMenu, dinnerMenu } = require('./ufscar');
+const { UfscarMenu, lunchMenu, dinnerMenu } = require('./ufscar');
 const { sendResponse } = require('./utils');
 const { Notification } = require('../db');
 const moment = require('moment');
@@ -11,7 +11,7 @@ router.post('/fulfillment', (req, res) => {
   console.log(`Request body: ${JSON.stringify(req.body)}`);
 
   const { action } = req.body.result; // https://dialogflow.com/docs/actions-and-parameters
-  const { parameters } = req.body.result.parameters; // https://dialogflow.com/docs/actions-and-parameters
+  const { parameters } = req.body.result; // https://dialogflow.com/docs/actions-and-parameters
   const inputContexts = req.body.result.contexts; // https://dialogflow.com/docs/contexts
   const requestSource = (req.body.originalRequest) ? req.body.originalRequest.source : undefined;
 
@@ -21,9 +21,17 @@ router.post('/fulfillment', (req, res) => {
 
   const actionHandlers = {
     'input.getMenu': () => {
-      const mealType = parameters.mealType || ufscarMenu.getNextMeal();
-      if (mealType === 'lunch') { lunchMenu.update(responseJSON => res.json(responseJSON)); } else {
-        dinnerMenu.update(responseJSON => res.json(responseJSON));
+      const mealType = parameters.mealType || UfscarMenu.getNextMeal();
+      if (mealType === 'lunch') {
+        lunchMenu.update().then((responseJSON) => {
+          console.dir(responseJSON);
+          res.json(responseJSON);
+        });
+      } else {
+        dinnerMenu.update().then((responseJSON) => {
+          console.dir(responseJSON);
+          res.json(responseJSON);
+        });
       }
     },
 

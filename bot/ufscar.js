@@ -7,6 +7,17 @@ class UfscarMenu {
   constructor(mealType) {
     this.mealType = mealType;
 
+    this.clean();
+  }
+
+  static getNextMeal() {
+    if (moment().tz('America/Sao_Paulo').hour() < 14) {
+      return 'lunch';
+    }
+    return 'dinner';
+  }
+
+  clean() {
     this.undefinedMenu = true;
     this.mealDiv = null;
     this.rawMenuContents = [];
@@ -19,26 +30,19 @@ class UfscarMenu {
     this.responseJSON = null;
   }
 
-  static getNextMeal() {
-    if (moment().tz('America/Sao_Paulo').hour() < 14) {
-      return 'lunch';
-    }
-    return 'dinner';
-  }
-
   update() {
     if (this.undefinedMenu) {
-      this.constructor();
+      this.clean();
 
       return this.crawlUFSCarSite(this.mealType).then(() => {
         this.structureMenuContents();
         return this.addImagesToPrincipalDishes().then(() => {
-          this.fbMenuContents();
-          this.telegramMenuContents();
-          this.slackMenuContents();
-          this.googleAssistantMenuContents();
-          this.genericMenuContents();
-          return this.responseJSON();
+          this.getFBMenuContents();
+          this.getTelegramMenuContents();
+          this.getSlackMenuContents();
+          this.getGoogleAssistantMenuContents();
+          this.getGenericMenuContents();
+          return this.getResponseJSON();
         });
       });
     }
@@ -122,7 +126,7 @@ class UfscarMenu {
     return Promise.all(promises).catch(() => { this.menuContentsWithImages = []; });
   }
 
-  fbMenuContents() {
+  getFBMenuContents() {
     if (this.fbMenuContents) return this.fbMenuContents;
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
@@ -166,7 +170,7 @@ class UfscarMenu {
     return this.fbMenuContents;
   }
 
-  telegramMenuContents() {
+  getTelegramMenuContents() {
     if (this.telegramMenuContents) return this.telegramMenuContents;
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
@@ -179,7 +183,7 @@ class UfscarMenu {
     return null;
   }
 
-  slackMenuContents() {
+  getSlackMenuContents() {
     if (this.slackMenuContents) return this.slackMenuContents;
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
@@ -192,7 +196,7 @@ class UfscarMenu {
     return null;
   }
 
-  googleAssistantMenuContents() {
+  getGoogleAssistantMenuContents() {
     if (this.googleAssistantMenuContents) return this.googleAssistantMenuContents;
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
@@ -205,28 +209,28 @@ class UfscarMenu {
     return null;
   }
 
-  genericMenuContents() {
+  getGenericMenuContents() {
     if (this.genericMenuContents) return this.genericMenuContents;
 
     this.genericMenuContents = this.menuContentsToString();
     return this.genericMenuContents;
   }
 
-  responseJSON() {
+  getResponseJSON() {
     if (this.responseJSON) return this.responseJSON;
 
     this.responseJSON = {
-      speech: this.genericMenuContents(),
-      displayText: this.genericMenuContents(),
+      speech: this.getGenericMenuContents(),
+      displayText: this.getGenericMenuContents(),
       data: {},
-      contextOut: [{ meal: this.getNextMeal() }],
+      contextOut: [{ meal: this.mealType }],
       source: 'UFSCar',
     };
 
-    if (this.fbMenuContents()) this.responseJSON.data.facebook = this.fbMenuContents();
-    if (this.telegramMenuContents()) this.responseJSON.data.facebook = this.telegramMenuContents();
-    if (this.slackMenuContents()) this.responseJSON.data.facebook = this.slackMenuContents();
-    if (this.googleAssistantMenuContents()) this.responseJSON.data.facebook = this.googleAssistantMenuContents();
+    if (this.getFBMenuContents()) this.responseJSON.data.facebook = this.getFBMenuContents();
+    if (this.getTelegramMenuContents()) this.responseJSON.data.facebook = this.getTelegramMenuContents();
+    if (this.getSlackMenuContents()) this.responseJSON.data.facebook = this.getSlackMenuContents();
+    if (this.getGoogleAssistantMenuContents()) this.responseJSON.data.facebook = this.getGoogleAssistantMenuContents();
 
     return this.responseJSON;
   }
