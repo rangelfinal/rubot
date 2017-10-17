@@ -6,6 +6,7 @@ const app = express();
 app.set('port', (process.env.PORT || 5000));
 
 app.post('/fulfillment', (req, res) => {
+  console.dir(req);
   console.log(`Request headers: ${JSON.stringify(req.headers)}`);
   console.log(`Request body: ${JSON.stringify(req.body)}`);
 
