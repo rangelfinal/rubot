@@ -10,12 +10,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "actions-on-google": "^1.5.1",
+    "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
     "moment": "^2.19.1",
     "moment-timezone": "^0.5.13",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "sequelize": "^4.15.0"
   },
   "devDependencies": {
     "dot-env": "0.0.1",
