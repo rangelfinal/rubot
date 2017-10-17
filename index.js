@@ -52,10 +52,12 @@ app.post('/fulfillment', (req, res) => {
   const actionHandlers = {
     'input.cardapio': () => {
       sendResponse('Ok! Buscando cardápio...');
+      let reply = '';
       getNextMenu().then((menu) => {
         for (let i = 0; i < menu.length; i += 1) {
-          sendResponse(`${menu[i].title} ${menu[i].content}\n`);
+          reply += `${menu[i].title} ${menu[i].content}\n`;
         }
+        sendResponse(reply);
       });
     },
   };
