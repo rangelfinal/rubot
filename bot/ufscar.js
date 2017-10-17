@@ -140,7 +140,7 @@ class UfscarMenu {
 
     this.fbMenuContents = {
       attachment: {
-        type: 'list',
+        type: 'template',
         payload: {
           template_type: 'list',
           elements: [],
