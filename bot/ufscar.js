@@ -138,8 +138,6 @@ class UfscarMenu {
       return null;
     }
 
-    console.dir(this.menuContentsWithImages);
-
     this.fbMenuContents = {
       attachment: {
         type: 'list',
@@ -154,9 +152,6 @@ class UfscarMenu {
     let restElements = '';
 
     for (let i = 0; i < this.menuContentsWithImages.length; i += 1) {
-      console.log(i, counter);
-      console.log(restElements);
-      console.dir(this.fbMenuContents.attachment.payload.elements);
       if (this.fbMenuContents.attachment.payload.elements.length >= 4) break;
       if (this.menuContentsWithImages[i].imageURL) {
         this.fbMenuContents.attachment.payload.elements.push({
