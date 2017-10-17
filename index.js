@@ -54,8 +54,12 @@ app.post('/fulfillment', (req, res) => {
       const responseToUser = {};
       responseToUser.speech = 'falado';
       responseToUser.displayText = 'escrito';
+      responseToUser.richResponses = {};
       facebookMenu().then((attachment) => {
-        responseToUser.richResponses = attachment;
+        responseToUser.richResponses.facebook = attachment;
+        console.dir(responseToUser);
+        console.dir(responseToUser.richResponses);
+        console.dir(responseToUser.richResponses.facebook);
         sendResponse(responseToUser);
       });
 
