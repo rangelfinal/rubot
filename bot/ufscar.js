@@ -91,6 +91,8 @@ class UfscarMenu {
     if (undefinedCounter > 3) {
       this.undefinedMenu = true;
       this.rawMenuContents = [{ title: '', content: 'Desculpa, cardápio não definido 😓' }];
+    } else {
+      this.undefinedMenu = false;
     }
     return this.rawMenuContents;
   }
