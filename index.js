@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { getNextMenu } = require('./ufscar');
+const { getNextMenu, facebookMenu } = require('./ufscar');
 
 const app = express();
 
@@ -51,13 +51,21 @@ app.post('/fulfillment', (req, res) => {
 
   const actionHandlers = {
     'input.cardapio': () => {
-      let reply = '';
+      const responseToUser = {};
+      responseToUser.speech = 'falado';
+      responseToUser.displayText = 'escrito';
+      facebookMenu().then((attachment) => {
+        responseToUser.richResponses = attachment;
+        sendResponse(responseToUser);
+      });
+
+      /* let reply = '';
       getNextMenu().then((menu) => {
         for (let i = 0; i < menu.length; i += 1) {
           reply += `${menu[i].title} ${menu[i].content}\n`;
         }
         sendResponse(reply);
-      });
+      }); */
     },
   };
 

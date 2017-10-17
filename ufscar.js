@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const request = require('request-promise');
+const moment = require('moment-timezone');
 const getGoogleImage = require('./googleImage');
 
 /**
@@ -68,45 +69,58 @@ function getMenu(lunchOrDinner) {
  * @return {Promise<Array<{title: string, content:string}>>} [description]
  */
 function getNextMenu() {
-  const currentTime = new Date().getHours();
+  const currentTime = new moment.tz('America/Sao_Paulo').hour();
   if (currentTime < 14) {
     return getMenu('lunch');
   }
-  return getMenu('dinner');
+  return getMenu('lunch'); // HACK: Consertar depois de testar
 }
 
 /**
  * Formata o conteúdo do cardápio como listas para o facebook
  * @return {Promise<Array>} Promise que resolve um array de listas
  */
-function ufscarMenu() {
+function facebookMenu() {
+  console.log('facebookMenu');
   return getNextMenu().then((menuContents) => {
     const promises = [];
-    const attachments = [];
     for (let i = 0; i < menuContents.length; i += 1) {
-      promises.push(getGoogleImage(menuContents[i].content).then(imageURL => ({
-        title: menuContents[i].title,
-        subtitle: menuContents[i].content,
-        image_url: imageURL,
-      })));
+      if (menuContents[i].title.indexOf('Principal') !== -1) {
+        promises.push(getGoogleImage(menuContents[i].content).then(imageURL => ({
+          title: menuContents[i].title,
+          subtitle: menuContents[i].content,
+          image_url: imageURL,
+        })));
+      }
     }
 
-    return Promise.all(promises).then((elements) => {
-      do {
-        const newAttachment = {
-          type: 'template',
-          payload: {
-            template_type: 'list',
-            elements: [],
-          },
-        };
-        newAttachment.payload.elements = elements.splice(0, 4);
-        attachments.push(newAttachment);
-      } while (elements.length > 4);
-      return attachments;
+    return Promise.all(promises).then((principalDishes) => {
+      const attachment = {
+        type: 'template',
+        payload: {
+          template_type: 'list',
+          elements: [],
+        },
+      };
+
+      for (let i = 0; i < principalDishes.length; i += 1) {
+        attachment.payload.elements.push(principalDishes[i]);
+      }
+
+      let restOfContent = '';
+
+      for (let i = 0; i < menuContents.length; i += 1) {
+        if (menuContents[i].title.indexOf('Principal') === -1) {
+          restOfContent += `${menuContents[i].title} ${menuContents[i].content}\n`;
+        }
+      }
+
+      attachment.payload.elements.push({ title: 'Cardápio', subtitle: restOfContent });
+
+      return attachment;
     });
   });
 }
 
 
-module.exports = { getNextMenu, ufscarMenu };
+module.exports = { getNextMenu, facebookMenu };

@@ -12,10 +12,13 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
+    "moment": "^2.19.1",
+    "moment-timezone": "^0.5.13",
     "request": "^2.83.0",
     "request-promise": "^4.2.2"
   },
   "devDependencies": {
+    "dot-env": "0.0.1",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.7.0"
