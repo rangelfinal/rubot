@@ -33,8 +33,6 @@ app.post('/fulfillment', (req, res) => {
       // Optional: add contexts (https://dialogflow.com/docs/contexts)
       responseJson.contextOut = responseToUser.outputContexts;
 
-      console.dir(responseJson);
-
       res.json(responseJson); // Send response to Dialogflow
     }
   }
@@ -58,7 +56,7 @@ app.post('/fulfillment', (req, res) => {
       responseToUser.displayText = 'escrito';
       responseToUser.richResponses = {};
       facebookMenu().then((attachment) => {
-        responseToUser.richResponses.facebook = attachment;
+        responseToUser.richResponses = { facebook: { attachment } };
         sendResponse(responseToUser);
       });
 
