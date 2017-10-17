@@ -162,7 +162,7 @@ class UfscarMenu {
         });
       } else if (counter < 2) {
         counter += 1;
-        title += `${this.menuContentsWithImages[i].title}`;
+        title += `${this.menuContentsWithImages[i].title.replace(':', '')}`;
         if (counter == 1) title += '/';
         subtitle += `${this.menuContentsWithImages[i].title} ${this.menuContentsWithImages[i].content}\n`;
       } else {
