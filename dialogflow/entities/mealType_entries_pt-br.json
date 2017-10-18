@@ -1,0 +1,16 @@
+[
+  {
+    "value": "lunch",
+    "synonyms": [
+      "lunch",
+      "almoço"
+    ]
+  },
+  {
+    "value": "dinner",
+    "synonyms": [
+      "dinner",
+      "janta"
+    ]
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "id": "7409ad0e-417f-480e-8d9b-0b11d744786a",
+  "name": "changeNotification",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.changeNotification",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "d0bf669e-2f19-4053-8ca8-ecd272c35c47",
+          "required": true,
+          "dataType": "@mealType",
+          "name": "mealType1",
+          "value": "$mealType1",
+          "prompts": [
+            {
+              "lang": "pt-br",
+              "value": "Para qual refeição você quer alterar as notificações?"
+            }
+          ],
+          "isList": true
+        },
+        {
+          "id": "f8c6fd16-07cc-43ca-97ed-264ec7a83f3b",
+          "dataType": "@mealType",
+          "name": "mealType2",
+          "value": "$mealType2",
+          "isList": false
+        },
+        {
+          "id": "b45c7b35-d717-49b6-9978-c643b9e37ae4",
+          "required": true,
+          "dataType": "@sys.date",
+          "name": "date1",
+          "value": "$date1",
+          "prompts": [
+            {
+              "lang": "pt-br",
+              "value": "Em quais dias você quer receber notificações para $mealType1?"
+            }
+          ],
+          "isList": true
+        },
+        {
+          "id": "1e014646-5b8b-4c12-9560-817c101bd446",
+          "dataType": "@sys.date",
+          "name": "date2",
+          "value": "$date2",
+          "isList": true
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "pt-br",
+          "speech": [
+            "Obrigado!\nVocê vai receber notificações de $mealType1 nas $date1, e $mealType2 nas $date2",
+            "Obrigado!\nVocê vai receber notificações de $mealType1 nas $date1"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {},
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1508286624,
+  "fallbackIntent": false,
+  "events": []
+}

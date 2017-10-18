@@ -1,0 +1,69 @@
+{
+  "id": "82f3f4c3-ce3c-4ee2-a5ed-fbfc12db27d0",
+  "name": "changeUniversity",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.changeUniversity",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "dfc9a27a-d544-4f0f-9bc7-ccf395db44da",
+          "required": true,
+          "dataType": "@university",
+          "name": "university",
+          "value": "$university",
+          "prompts": [
+            {
+              "lang": "pt-br",
+              "value": "Qual a sua universidade?"
+            },
+            {
+              "lang": "pt-br",
+              "value": "Não peguei qual sua faculdade. Qual é?"
+            }
+          ],
+          "isList": false
+        },
+        {
+          "id": "8356e9e7-eea3-42ed-b053-5e1e56e660df",
+          "required": true,
+          "dataType": "@campus",
+          "name": "campus",
+          "value": "$campus",
+          "prompts": [
+            {
+              "lang": "pt-br",
+              "value": "Qual o seu campus?"
+            },
+            {
+              "lang": "pt-br",
+              "value": "Faltou o campus. De onde você é?"
+            }
+          ],
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "pt-br",
+          "speech": [
+            "Ok! Alterando para $university de $campus.",
+            ""
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {},
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1508283056,
+  "fallbackIntent": false,
+  "events": []
+}
