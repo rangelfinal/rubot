@@ -1,5 +1,5 @@
 const express = require('express');
-const { UfscarMenu, lunchMenu, dinnerMenu } = require('./ufscar');
+const { UfscarMenu, lunchMenu, dinnerMenu } = require('../ufscar/ufscar');
 const { sendResponse } = require('./utils');
 const { Notification } = require('../db');
 const moment = require('moment');
