@@ -5,6 +5,8 @@ const { sequelize } = require('./db');
 
 const app = express();
 
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
+
 app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 5000));
 

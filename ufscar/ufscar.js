@@ -2,6 +2,8 @@ const cheerio = require('cheerio');
 const request = require('request-promise');
 const moment = require('moment-timezone');
 const getGoogleImage = require('./googleImage');
+const { redis } = require('../db');
+
 
 class UfscarMenu {
   constructor(mealType) {
@@ -32,25 +34,144 @@ class UfscarMenu {
 
   update() {
     if (this.undefinedMenu) {
+      console.log('Menu is undefined, updating...');
       this.clean();
 
-      return this.crawlUFSCarSite(this.mealType).then(() => {
-        this.structureMenuContents();
-        return this.addImagesToPrincipalDishes().then(() => {
-          this.getFBMenuContents();
-          this.getTelegramMenuContents();
-          this.getSlackMenuContents();
-          this.getGoogleAssistantMenuContents();
-          this.getGenericMenuContents();
-          return this.getResponseJSON();
-        });
+      return this.getFromRedis().then((res) => {
+        if (!res) {
+          console.log('Redis is outdated, getting info from website...');
+          return this.updateFromSite();
+        }
+
+        console.log('Updating templates with Redis data');
+
+        this.updateTemplates();
+        return this.getResponseJSON();
+      }).catch((err) => {
+        console.log('Error getting data from redis, updating from website...');
+        console.err(err);
+        this.updateFromSite();
       });
     }
     return Promise.resolve(this.responseJSON);
   }
 
+  updateFromSite() {
+    console.log('Updating from website');
+    return this.crawlUFSCarSite(this.mealType).then(() => {
+      this.structureMenuContents();
+      return this.addImagesToPrincipalDishes().then(() => {
+        this.save();
+        this.updateTemplates();
+        return this.getResponseJSON();
+      });
+    });
+  }
+
+  updateTemplates() {
+    console.log('Updating templates');
+    this.getFBMenuContents();
+    this.getTelegramMenuContents();
+    this.getSlackMenuContents();
+    this.getGoogleAssistantMenuContents();
+    this.getGenericMenuContents();
+  }
+
+  getFromRedis() {
+    console.log('Getting data from Redis');
+    return redis.getAsync(`${this.mealType}:lastUpdate`).then((res) => {
+      if (!res) {
+        console.log('No lastUpdate key on redis');
+        return false; // Se não tem chave, não puxar do Redis
+      }
+      if (moment().diff(moment(res)) > 1000 * 60 * 60) {
+        console.log('Redis data is stale');
+        return false; // Se tem mais de uma hora de vida, não puxar do Redis
+      }
+
+      const promises = [];
+
+      promises.push(redis.getAsync(`${this.mealType}:undefinedMenu`).then((gres) => {
+        this.undefinedMenu = gres;
+      }));
+
+      promises.push(redis.getAsync(`${this.mealType}:mealDiv`).then((gres) => {
+        if (gres) this.mealDiv = cheerio(gres);
+      }));
+
+      promises.push(redis.lrangeAsync(`${this.mealType}:rawMenuContents`, 0, -1).then((lres) => {
+        const listPromises = [];
+
+        for (let i = 0; i < lres.length; i += 1) {
+          this.rawMenuContents[i] = {};
+          listPromises.push(redis.hgetAsync(lres[i], 'title').then((hres) => {
+            this.rawMenuContents[i].title = hres;
+          }));
+          listPromises.push(redis.hgetAsync(lres[i], 'content').then((hres) => {
+            this.rawMenuContents[i].content = hres;
+          }));
+        }
+
+        return Promise.all(listPromises);
+      }));
+
+      promises.push(redis.lrangeAsync(`${this.mealType}:menuContentsWithImages`, 0, -1).then((lres) => {
+        const listPromises = [];
+
+        for (let i = 0; i < lres.length; i += 1) {
+          this.menuContentsWithImages[i] = {};
+          listPromises.push(redis.hgetAsync(lres[i], 'title').then((hres) => {
+            this.menuContentsWithImages[i].title = hres;
+          }));
+          listPromises.push(redis.hgetAsync(lres[i], 'content').then((hres) => {
+            this.menuContentsWithImages[i].content = hres;
+          }));
+          listPromises.push(redis.hgetAsync(lres[i], 'imageURL').then((hres) => {
+            if (lres) this.menuContentsWithImages[i].imageURL = hres;
+          }));
+        }
+
+        return Promise.all(listPromises);
+      }));
+
+      return Promise.all(promises).then(() => true);
+    });
+  }
+
+  save() {
+    console.log(`Saving ${this.mealType} data to redis`);
+
+    const promises = [];
+
+    promises.push(redis.setAsync(`${this.mealType}:undefinedMenu`, this.undefinedMenu));
+
+    if (this.mealDiv) promises.push(redis.setAsync(`${this.mealType}:mealDiv`, this.mealDiv.toString()));
+
+    if (this.rawMenuContents && this.rawMenuContents.length > 0) {
+      for (let i = 0; i < this.rawMenuContents.length; i += 1) {
+        promises.push(redis.hsetAsync(`${this.mealType}:rawMenuContents:${i}`, 'title', this.rawMenuContents[i].title));
+        promises.push(redis.hsetAsync(`${this.mealType}:rawMenuContents:${i}`, 'content', this.rawMenuContents[i].content));
+        promises.push(redis.rpushAsync(`${this.mealType}:rawMenuContents`, `${this.mealType}:rawMenuContents:${i}`));
+      }
+    }
+
+    if (this.menuContentsWithImages && this.menuContentsWithImages.length > 0) {
+      for (let i = 0; i < this.menuContentsWithImages.length; i += 1) {
+        promises.push(redis.hsetAsync(`${this.mealType}:menuContentsWithImages:${i}`, 'title', this.menuContentsWithImages[i].title));
+        promises.push(redis.hsetAsync(`${this.mealType}:menuContentsWithImages:${i}`, 'content', this.menuContentsWithImages[i].content));
+        if (this.menuContentsWithImages[i].imageURL) { promises.push(redis.hsetAsync(`${this.mealType}:menuContentsWithImages:${i}`, 'imageURL', this.menuContentsWithImages[i].imageURL)); }
+        promises.push(redis.rpushAsync(`${this.mealType}:menuContentsWithImages`, `${this.mealType}:menuContentsWithImages:${i}`));
+      }
+    }
+
+    promises.push(redis.setAsync(`${this.mealType}:lastUpdate`, moment().toISOString()));
+
+    return Promise.all(promises);
+  }
+
   crawlUFSCarSite(lunchOrDinner) {
     if (this.mealDiv) return this.mealDiv;
+    console.log(`Crawling website to get ${this.mealType} data`);
 
     return request('http://www2.ufscar.br/restaurantes-universitario').then((body) => {
       const $ = cheerio.load(body);
@@ -67,6 +188,7 @@ class UfscarMenu {
 
   structureMenuContents() {
     if (this.rawMenuContents && this.rawMenuContents.length > 0) { return this.rawMenuContents; }
+    console.log('Structuring Menu Contents');
 
     let undefinedCounter = 0;
 
@@ -107,6 +229,7 @@ class UfscarMenu {
 
   addImagesToPrincipalDishes() {
     if (this.menuContentsWithImages && this.menuContentsWithImages.length > 0) { return this.menuContentsWithImages; }
+    console.log(`Adding images to principal ${this.mealType} dishes`);
 
     const promises = [];
 
@@ -127,11 +250,15 @@ class UfscarMenu {
       .then((elements) => {
         this.menuContentsWithImages = elements;
       })
-      .catch(() => { this.menuContentsWithImages = []; });
+      .catch((err) => {
+        console.error(err);
+        this.menuContentsWithImages = [];
+      });
   }
 
   getFBMenuContents() {
     if (this.fbMenuContents) return this.fbMenuContents;
+    console.log(`Updating ${this.mealType} facebook template`);
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
       this.fbMenuContents = null;
@@ -180,6 +307,7 @@ class UfscarMenu {
 
   getTelegramMenuContents() {
     if (this.telegramMenuContents) return this.telegramMenuContents;
+    console.log(`Updating ${this.mealType} telegram template`);
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
       this.telegramMenuContents = null;
@@ -194,6 +322,8 @@ class UfscarMenu {
   getSlackMenuContents() {
     if (this.slackMenuContents) return this.slackMenuContents;
 
+    console.log(`Updating ${this.mealType} slack template`);
+
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
       this.slackMenuContents = null;
       return null;
@@ -206,6 +336,8 @@ class UfscarMenu {
 
   getGoogleAssistantMenuContents() {
     if (this.googleAssistantMenuContents) return this.googleAssistantMenuContents;
+
+    console.log(`Updating ${this.mealType} google assistant template`);
 
     if (this.undefinedMenu || !this.menuContentsWithImages || this.menuContentsWithImages.length === 0) {
       this.googleAssistantMenuContents = null;
@@ -220,12 +352,16 @@ class UfscarMenu {
   getGenericMenuContents() {
     if (this.genericMenuContents) return this.genericMenuContents;
 
+    console.log(`Updating ${this.mealType} generic template`);
+
     this.genericMenuContents = this.menuContentsToString();
     return this.genericMenuContents;
   }
 
   getResponseJSON() {
     if (this.responseJSON) return this.responseJSON;
+
+    console.log(`Updating ${this.mealType} json`);
 
     this.responseJSON = {
       speech: this.getGenericMenuContents(),

@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Robô de conversação do RU da UFSCar",
   "main": "index.js",
-  "engines" : { "node" : "^8.2.1" },
+  "engines": {
+    "node": "^8.2.1"
+  },
   "private": true,
   "bugs": "rangel.final@gmail.com",
   "scripts": {
@@ -17,6 +19,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "actions-on-google": "^1.5.1",
+    "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
@@ -24,12 +27,13 @@
     "moment-timezone": "^0.5.13",
     "pg": "^7.3.0",
     "pg-hstore": "^2.3.2",
+    "redis": "^2.8.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "sequelize": "^4.15.0"
   },
   "devDependencies": {
-    "dot-env": "0.0.1",
+    "dotenv": "^4.0.0",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.7.0"
