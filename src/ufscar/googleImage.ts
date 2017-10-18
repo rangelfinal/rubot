@@ -1,4 +1,4 @@
-const request = require('request-promise');
+import request from 'request-promise';
 
 /**
  * Retorna a primeira imagem encontrada no Google Imagens
@@ -25,4 +25,4 @@ function getGoogleImage(query) {
   });
 }
 
-module.exports = getGoogleImage;
+export default getGoogleImage;

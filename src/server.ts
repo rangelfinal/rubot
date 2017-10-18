@@ -1,7 +1,7 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const botRouter = require('./bot/router');
-const { sequelize } = require('./db');
+import express from 'express';
+import bodyParser from 'body-parser';
+import botRouter from './bot/router';
+import { sequelize } from './db';
 
 const app = express();
 

@@ -1,8 +1,8 @@
-const cheerio = require('cheerio');
-const request = require('request-promise');
-const moment = require('moment-timezone');
-const getGoogleImage = require('./googleImage');
-const { redis } = require('../db');
+import cheerio from 'cheerio';
+import request from 'request-promise';
+import moment from 'moment-timezone';
+import getGoogleImage from './googleImage';
+import { redis } from '../db';
 
 
 class UfscarMenu {
@@ -383,4 +383,4 @@ class UfscarMenu {
 const lunchMenu = new UfscarMenu('lunch');
 const dinnerMenu = new UfscarMenu('dinner');
 
-module.exports = { UfscarMenu, lunchMenu, dinnerMenu };
+export { UfscarMenu, lunchMenu, dinnerMenu };

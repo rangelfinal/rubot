@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('./sequelize');
+import { sequelize, Sequelize } from './sequelize';
 
 const Notification = sequelize.define('notification', {
   target: {
@@ -17,4 +17,4 @@ const Notification = sequelize.define('notification', {
   },
 });
 
-module.exports = { Notification };
+export default Notification;

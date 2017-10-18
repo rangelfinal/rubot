@@ -1,7 +1,7 @@
 const express = require('express');
-const { UfscarMenu, lunchMenu, dinnerMenu } = require('../ufscar/ufscar');
-const { sendResponse } = require('./utils');
-const { Notification } = require('../db');
+import { UfscarMenu, lunchMenu, dinnerMenu } from "../ufscar/ufscar";
+import { sendResponse } from './utils';
+import { Notification } from '../db';
 const moment = require('moment');
 
 const router = express.Router();
@@ -79,4 +79,4 @@ router.post('/fulfillment', (req, res) => {
   actionHandlers[action]();
 });
 
-module.exports = router;
+export default router;

@@ -9,7 +9,10 @@
   "private": true,
   "bugs": "rangel.final@gmail.com",
   "scripts": {
-    "start": "node index.js",
+    "start": "npm run build && npm run server",
+    "build": "tsc",
+    "serve": "nodemon dist/server.js",
+    "debug": "nodemon --inspect dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
@@ -36,6 +39,8 @@
     "dotenv": "^4.0.0",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.7.0"
+    "eslint-plugin-import": "^2.7.0",
+    "nodemon": "^1.12.1",
+    "typescript": "^2.5.3"
   }
 }
