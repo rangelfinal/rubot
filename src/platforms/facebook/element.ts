@@ -14,10 +14,13 @@ export default class FacebookElement {
    * @return {object} The formated element
    */
   public format(): object {
-    return {
-      image_url: this.imageURL,
+    const obj: {[k: string]: any} = {
       subtitle: this.subtitle,
       title: this.title,
     };
+
+    if (this.imageURL) { obj.image_url = this.imageURL; }
+
+    return obj;
   }
 }
