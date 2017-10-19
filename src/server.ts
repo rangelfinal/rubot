@@ -15,6 +15,6 @@ app.use('/', botRouter);
 
 sequelize.sync().then(() => {
   app.listen(app.get('port'), () => {
-    logger.info('Node app is running on port', app.get('port'));
+    logger.info(`Node app is running on port ${app.get('port')}`);
   });
 });
