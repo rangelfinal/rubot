@@ -9,7 +9,7 @@
   "private": true,
   "bugs": "rangel.final@gmail.com",
   "scripts": {
-    "start": "npm run build && npm run server",
+    "start": "npm run build && npm run serve",
     "build": "tsc",
     "serve": "nodemon dist/server.js",
     "debug": "nodemon --inspect dist/server.js",
