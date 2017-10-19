@@ -7,7 +7,7 @@ import Menu from '../menu';
 import MenuContent from '../menuContent';
 import MenuContents from '../menuContents';
 
-class UFSCarMenu extends Menu {
+export default class UFSCarSaoCarlosMenu extends Menu {
   public restaurantName: string = 'UFSCarSaoCarlos';
 
   public imageTitleFilter: string = 'Principal';
@@ -72,8 +72,3 @@ class UFSCarMenu extends Menu {
     return 'dinner';
   }
 }
-
-const lunchMenu = new UFSCarMenu('lunch');
-const dinnerMenu = new UFSCarMenu('dinner');
-
-export { UFSCarMenu, lunchMenu, dinnerMenu };

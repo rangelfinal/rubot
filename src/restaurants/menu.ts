@@ -1,9 +1,7 @@
 import * as Promise from 'bluebird';
 import * as moment from 'moment';
 import * as util from 'util';
-import { IResponseJSON } from '../bot/dialogflow';
 import { Redis } from '../db';
-import FacebookList from '../platforms/facebook/list';
 import logger from '../utils/logger';
 import MenuContent from './menuContent';
 import MenuContents from './menuContents';
@@ -15,9 +13,6 @@ export default abstract class Menu {
   public mealType: string;
   public defined: boolean = false;
   public menuContents: MenuContents = new MenuContents();
-  public facebookMenuContents: FacebookList = new FacebookList();
-  public telegramMenuContents: any; // TODO
-  public googleAssistantMenuContents: any; // TODO
 
   // Filter which menu elements should get a image.
   // Userfull for facebook list, that only accepts up to 4 elements,
@@ -45,7 +40,7 @@ export default abstract class Menu {
    * @param  {boolean}          force True if should force update.
    * @return {Promise<IResponseJSON>} A promise that returns the correct formated JSON response
    */
-  public update(force?: boolean): Promise<IResponseJSON> {
+  public update(force?: boolean): Promise<boolean> {
     if (force || !this.defined) {
       logger.info(`Updating ${this.mealType} of ${this.restaurantName}`);
       return this.getFromRedis().then((result) => {
@@ -55,21 +50,16 @@ export default abstract class Menu {
             return this.menuContents.getImages(this.imageTitleFilter, this.imageContentFilter)
               .then(() => {
                 this.saveToRedis();
-                this.facebookMenuContents = new FacebookList(this.menuContents.elements);
-                return this.format();
+                return true;
               });
           });
         }
-        return this.menuContents.getImages(this.imageTitleFilter, this.imageContentFilter)
-          .then(() => {
-            this.facebookMenuContents = new FacebookList(this.menuContents.elements);
-            return this.format();
-          });
+        return this.menuContents.getImages(this.imageTitleFilter, this.imageContentFilter);
       });
 
     }
 
-    return Promise.resolve(this.format());
+    return Promise.resolve(true);
   }
 
   /**
@@ -147,17 +137,5 @@ export default abstract class Menu {
           return false;
         });
     });
-  }
-
-  public format(): IResponseJSON {
-    const responseToUser: IResponseJSON = {
-      data: {
-        facebook: this.facebookMenuContents.format(),
-      },
-      displayText: this.menuContents.toString(),
-      speech: this.menuContents.toString(),
-    };
-
-    return responseToUser;
   }
 }
