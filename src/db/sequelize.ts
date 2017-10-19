@@ -1,12 +1,12 @@
-import Sequelize from'sequelize';
+import * as Sequelize from 'sequelize';
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
-  protocol: 'postgres',
-  logging: true,
   dialectOptions: {
     ssl: true,
   },
+  logging: true,
+  protocol: 'postgres',
 });
 
 export { Sequelize, sequelize };

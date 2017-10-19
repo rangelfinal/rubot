@@ -1,20 +1,20 @@
 import { sequelize, Sequelize } from './sequelize';
 
-const Notification = sequelize.define('notification', {
-  target: {
-    type: Sequelize.STRING,
+const notification = sequelize.define('notification', {
+  dayOfTheWeek: {
     allowNull: false,
+    type: Sequelize.INTEGER,
   },
 
   mealType: {
-    type: Sequelize.ENUM('lunch', 'dinner'),
     allowNull: false,
+    type: Sequelize.ENUM('lunch', 'dinner'),
   },
 
-  dayOfTheWeek: {
-    type: Sequelize.INTEGER,
+  target: {
     allowNull: false,
+    type: Sequelize.STRING,
   },
 });
 
-export default Notification;
+export default notification;

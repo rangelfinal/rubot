@@ -1,7 +1,7 @@
-import { sequelize, Sequelize } from './sequelize';
 import Notification from './notification';
-import redis from './redis';
+import Redis from './redis';
+import { sequelize, Sequelize } from './sequelize';
 
 export {
-  Notification, sequelize, Sequelize, redis,
+  Notification, sequelize, Sequelize, Redis,
 };

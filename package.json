@@ -2,7 +2,7 @@
   "name": "rubot-ufscar",
   "version": "0.0.1",
   "description": "Robô de conversação do RU da UFSCar",
-  "main": "index.js",
+  "main": "dist/server.js",
   "engines": {
     "node": "^8.2.1"
   },
@@ -21,6 +21,7 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
+    "@types/moment-timezone": "^0.5.0",
     "actions-on-google": "^1.5.1",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
@@ -32,15 +33,26 @@
     "pg-hstore": "^2.3.2",
     "redis": "^2.8.0",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2",
-    "sequelize": "^4.15.0"
+    "request-promise-native": "^1.0.5",
+    "sequelize": "^4.15.0",
+    "winston": "^3.0.0-rc0"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.16",
+    "@types/body-parser": "^1.16.5",
+    "@types/cheerio": "^0.22.3",
+    "@types/express": "^4.0.37",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^8.0.45",
+    "@types/redis": "^2.6.1",
+    "@types/request-promise-native": "^1.0.8",
+    "@types/sequelize": "^4.0.76",
+    "@types/winston": "^2.3.6",
     "dotenv": "^4.0.0",
-    "eslint": "^4.9.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.7.0",
     "nodemon": "^1.12.1",
-    "typescript": "^2.5.3"
+    "tslint": "^5.7.0",
+    "tslint-config-airbnb": "^5.3.0",
+    "typescript": "^2.5.3",
+    "typescript-eslint-parser": "^8.0.0"
   }
 }

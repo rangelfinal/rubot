@@ -7,13 +7,15 @@
     "outDir": "dist",
     "paths": {
       "*": [
-        "node_modules/*"
+        "node_modules/*",
+        "src/types/*"
       ],
     },
     "pretty": true,
     "removeComments": true,
+    "strict": true,
     "sourceMap": true,
-    "target": "es6"
+    "target": "ES6"
   },
   "include": [
     "src/**/*"
