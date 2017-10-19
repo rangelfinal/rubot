@@ -1,4 +1,5 @@
-import * as request from 'request-promise-native';
+import * as Promise from 'bluebird';
+import * as request from 'request-promise';
 import logger from './logger';
 
 /**

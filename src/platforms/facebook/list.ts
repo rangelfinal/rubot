@@ -51,7 +51,8 @@ export default class FacebookListTemplate {
         if (groupedElements[groupedElements.length - 1] && // element exists
           groupedElements[groupedElements.length - 1].subtitle && // element has a subtitle
           !groupedElements[groupedElements.length - 1].imageURL && // element doens't have a image
-          groupedElements[groupedElements.length - 1].subtitle.length + element.title.length + element.subtitle.length < 80) {
+          (groupedElements[groupedElements.length - 1].subtitle.length + element.title.length
+            + element.subtitle.length) < 80) {
           groupedElements[groupedElements.length - 1].title += '/' + element.title;
           groupedElements[groupedElements.length - 1].subtitle += '\n' + element.title + ': ' + element.subtitle;
         } else {

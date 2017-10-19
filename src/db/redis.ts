@@ -1,5 +1,7 @@
 import * as Promise from 'bluebird';
 import * as redis from 'redis';
+import * as util from 'util';
+import logger from '../utils/logger';
 
 export default class Redis {
   public static client = redis.createClient(process.env.REDIS_URL as string);
@@ -16,6 +18,7 @@ export default class Redis {
    * @param {string | number | boolean} value
    */
   public static setValue(key: string, value: string | number | boolean): void {
+    logger.debug(`Setting ${key}, ${value}`);
     Redis.client.set(key, value.toString());
   }
 
@@ -25,7 +28,10 @@ export default class Redis {
    * @return {Promise<string>}
    */
   public static getValue(key: string): Promise<string> {
-    return Redis.getAsync(key);
+    return Redis.getAsync(key).then((value) => {
+      logger.debug(`Got ${key}, ${value}`);
+      return value;
+    });
   }
 
   /**
@@ -34,6 +40,7 @@ export default class Redis {
    * @param  {(string|number|boolean} arr
    */
   public static setArray(key: string, arr: (string|number|boolean)[]): void {
+    logger.debug(`Setting ${key}, ${util.inspect(arr.map(x => x.toString()))}`);
     Redis.client.rpush(key, ...arr.map(x => x.toString()));
   }
 
@@ -43,17 +50,22 @@ export default class Redis {
    * @return {Promise}
    */
   public static getArray(key: string): Promise<string[] | number[] | boolean[]> {
-    return Redis.lrangeAsync(key, 0, -1);
+    return Redis.lrangeAsync(key, 0, -1).then((arr) => {
+      logger.debug(`Got ${key}, ${util.inspect(arr)}`);
+      return arr;
+    });
   }
 
   public static ObjectToArray(obj: object): string[] {
     const arr = [];
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
+        if (typeof obj[key] === 'undefined' || obj[key] === null) { continue; }
         arr.push(key.toString());
         arr.push(obj[key].toString());
       }
     }
+    logger.debug(`From ${util.inspect(obj)}, converted to ${util.inspect(arr)}`);
     return arr;
   }
 
@@ -63,6 +75,7 @@ export default class Redis {
    * @param {object} obj
    */
   public static setShallowObject(key: string, obj: object[]): void {
+    logger.debug(`Setting ${key}, ${util.inspect(Redis.ObjectToArray(obj))}`);
     Redis.client.hmset(key, Redis.ObjectToArray(obj));
   }
 
@@ -72,7 +85,10 @@ export default class Redis {
    * @return {Promise<object>}
    */
   public static getShallowObject(key: string): Promise<object> {
-    return Redis.hgetallAsync(key);
+    return Redis.hgetallAsync(key).then((obj) => {
+      logger.debug(`Got ${key}, ${util.inspect(obj)}`);
+      return obj;
+    });
   }
 
   /**
@@ -81,8 +97,12 @@ export default class Redis {
    * @param {object[]} arr
    */
   public static setObjectArray(key: string, arr: object[]): void {
+    logger.debug(`Going to set ${key}, ${util.inspect(arr)}`);
+    logger.debug(`Going to set ${key}, ${util.inspect(arr.entries())}`);
     for (const [index,obj] of arr.entries()) {
+      logger.debug(`Setting ${key + ':' + index}, ${util.inspect(Redis.ObjectToArray(obj))}`);
       Redis.client.hmset(key + ':' + index, Redis.ObjectToArray(obj));
+      logger.debug(`Setting ${key}, ${ key + ':' + index}`);
       Redis.client.rpush(key, key + ':' + index);
     }
   }
@@ -102,7 +122,10 @@ export default class Redis {
         );
       }
 
-      return Promise.all(promises);
+      return Promise.all(promises).then((values) => {
+        logger.debug(`Got ${key}, ${util.inspect(values)}`);
+        return values;
+      });
     });
   }
 

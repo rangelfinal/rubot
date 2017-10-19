@@ -1,3 +1,6 @@
+import * as Promise from 'bluebird';
+import * as moment from 'moment';
+import * as util from 'util';
 import { IResponseJSON } from '../bot/dialogflow';
 import { Redis } from '../db';
 import FacebookList from '../platforms/facebook/list';
@@ -22,8 +25,6 @@ export default abstract class Menu {
   public imageTitleFilter: string;
   public imageContentFilter: string;
 
-  private redisKeyPrefix: string;
-
   /**
    * Save the mealType and creates de redisKeyPrefix.
    * @param  {string} mealType Type of meal this menu shows
@@ -31,10 +32,13 @@ export default abstract class Menu {
    */
   constructor(mealType?: string) {
     this.mealType = mealType ? mealType : this.getMealType();
-
-    // Set a prefix that should be unique to indentify the menu in Redis
-    this.redisKeyPrefix = this.restaurantName + ':' + this.mealType + ':';
   }
+
+  /**
+   * Get a prefix that should be unique to indentify the menu in Redis
+   * @return {string} The key prefix
+   */
+  public abstract getRedisKeyPrefix(): string;
 
   /**
    * Update the menu. May not update if it's updated already.
@@ -44,14 +48,25 @@ export default abstract class Menu {
   public update(force?: boolean): Promise<IResponseJSON> {
     if (force || !this.defined) {
       logger.info(`Updating ${this.mealType} of ${this.restaurantName}`);
-      return this.updateMenuContents(force).then((menuContents) => {
-        this.menuContents = menuContents;
+      return this.getFromRedis().then((result) => {
+        if (!result) {
+          return this.updateMenuContents(force).then((menuContents) => {
+            this.menuContents = menuContents;
+            return this.menuContents.getImages(this.imageTitleFilter, this.imageContentFilter)
+              .then(() => {
+                this.saveToRedis();
+                this.facebookMenuContents = new FacebookList(this.menuContents.elements);
+                return this.format();
+              });
+          });
+        }
         return this.menuContents.getImages(this.imageTitleFilter, this.imageContentFilter)
           .then(() => {
             this.facebookMenuContents = new FacebookList(this.menuContents.elements);
             return this.format();
           });
       });
+
     }
 
     return Promise.resolve(this.format());
@@ -75,8 +90,12 @@ export default abstract class Menu {
    */
   public saveToRedis(): void {
     logger.debug('Saving to Redis');
-    Redis.setValue(this.redisKeyPrefix + 'defined', this.defined);
-    Redis.setObjectArray(this.redisKeyPrefix + 'menuContents', this.menuContents.elements as object[]);
+    Redis.setValue(this.getRedisKeyPrefix() + 'defined', this.defined);
+    Redis.setValue(this.getRedisKeyPrefix() + 'lastUpdate', moment().toISOString());
+    logger.debug(util.inspect(this.menuContents));
+    logger.debug(util.inspect(this.menuContents.elements));
+    Redis.setValue(this.getRedisKeyPrefix() + 'menuContents:hasImages', this.menuContents.hasImages);
+    Redis.setObjectArray(this.getRedisKeyPrefix() + 'menuContents:elements', this.menuContents.elements as object[]);
   }
 
   /**
@@ -85,27 +104,49 @@ export default abstract class Menu {
    */
   public getFromRedis(): Promise<boolean> {
     logger.debug('Getting from Redis');
-    const promises = [];
 
-    promises.push(
-      Redis.getValue(this.redisKeyPrefix + 'defined').then((defined) => {
-        this.defined = !!defined;
-      }),
-    );
+    this.menuContents = new MenuContents();
 
-    promises.push(
-      Redis.getObjectArray(this.redisKeyPrefix + 'menuContents').then((contents) => {
-        this.menuContents = new MenuContents(contents as MenuContent[]);
-      }),
-    );
+    return Redis.getValue(this.getRedisKeyPrefix() + 'lastUpdate').then((lastUpdate) => {
+      // No data
+      if (!lastUpdate) { return false; }
 
-    // Returns a promise that fulfills when all other promises complete
-    return Promise.all(promises)
-      .then(() => true)
-      .catch((err) => {
-        logger.error(err);
-        return false;
-      });
+      // Data is stale, should update
+      if (moment().diff(moment(lastUpdate)) > 60 * 60 * 1000) { return false; }
+
+      const promises = [];
+
+      promises.push(
+        Redis.getValue(this.getRedisKeyPrefix() + 'defined').then((defined) => {
+          this.defined = !!defined;
+        }),
+      );
+
+      promises.push(
+        Redis.getValue(this.getRedisKeyPrefix() + 'menuContents:hasImages').then((hasImages) => {
+          this.menuContents.hasImages = !!hasImages;
+        }),
+      );
+
+      promises.push(
+        Redis.getObjectArray(this.getRedisKeyPrefix() + 'menuContents:elements')
+        .then((contents: {title, content, imageURL?}[]) => {
+          for (const content of contents) {
+            this.menuContents.elements.push(
+              new MenuContent(content.title, content.content, content.imageURL),
+            );
+          }
+        }),
+      );
+
+      // Returns a promise that fulfills when all other promises complete
+      return Promise.all(promises)
+        .then(() => true)
+        .catch((err) => {
+          logger.error(err);
+          return false;
+        });
+    });
   }
 
   public format(): IResponseJSON {

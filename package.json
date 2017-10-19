@@ -30,7 +30,6 @@
     "@types/moment-timezone": "^0.5.0",
     "@types/node": "^8.0.45",
     "@types/redis": "^2.6.1",
-    "@types/request-promise-native": "^1.0.8",
     "@types/sequelize": "^4.0.76",
     "@types/winston": "^2.3.6",
     "actions-on-google": "^1.5.1",
@@ -44,7 +43,7 @@
     "pg-hstore": "^2.3.2",
     "redis": "^2.8.0",
     "request": "^2.83.0",
-    "request-promise-native": "^1.0.5",
+    "request-promise": "^4.2.2",
     "sequelize": "^4.15.0",
     "typescript": "^2.5.3",
     "winston": "^2.3"

@@ -1,3 +1,4 @@
+import * as Promise from 'bluebird';
 import getGoogleImage from '../utils/googleImage';
 import logger from '../utils/logger';
 

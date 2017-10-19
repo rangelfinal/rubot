@@ -1,6 +1,7 @@
+import * as Promise from 'bluebird';
 import * as cheerio from 'cheerio';
 import * as moment from 'moment-timezone';
-import * as request from 'request-promise-native';
+import * as request from 'request-promise';
 import logger from '../../utils/logger';
 import Menu from '../menu';
 import MenuContent from '../menuContent';
@@ -11,6 +12,14 @@ class UFSCarMenu extends Menu {
 
   public imageTitleFilter: string = 'Principal';
   public imageContentFilter: string = '';
+
+  constructor(mealType?: string) {
+    super(mealType);
+  }
+
+  public getRedisKeyPrefix(): string {
+    return `${this.restaurantName}:${this.mealType}:`;
+  }
 
   public updateMenuContents(force?: boolean): Promise<MenuContents> {
     return request('http://www2.ufscar.br/restaurantes-universitario').then((body) => {
