@@ -28,11 +28,10 @@
     "@types/cheerio": "^0.22.3",
     "@types/express": "^4.0.37",
     "@types/moment-timezone": "^0.5.0",
-    "@types/node": "^8.0.45",
+    "@types/node": "^8.0.46",
     "@types/redis": "^2.6.1",
     "@types/sequelize": "^4.0.76",
     "@types/winston": "^2.3.6",
-    "actions-on-google": "^1.5.1",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "botly": "^1.4.2",
@@ -48,7 +47,7 @@
     "request-promise": "^4.2.2",
     "sequelize": "^4.15.0",
     "typescript": "^2.5.3",
-    "winston": "^2.3"
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "dotenv": "^4.0.0",
