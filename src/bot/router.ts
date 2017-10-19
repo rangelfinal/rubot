@@ -65,14 +65,12 @@ router.post('/fulfillment', (req, res) => {
       const mealType = parameters.mealType;
       if (mealType === 'lunch') {
         lunchMenu.update().then((responseJSON) => {
-          logger.debug(responseJSON.toString());
-          logger.debug(inspect(responseJSON));
+          logger.debug(inspect(responseJSON, false, null));
           return res.json(responseJSON);
         });
       } else {
         dinnerMenu.update().then((responseJSON) => {
-          logger.debug(responseJSON.toString());
-          logger.debug(inspect(responseJSON));
+          logger.debug(inspect(responseJSON, false, null));
           return res.json(responseJSON);
         });
       }
