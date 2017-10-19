@@ -16,12 +16,14 @@ export default class FacebookListTemplate {
    * @return {FacebookListTemplate}      A new FacebookListTemplate
    */
   constructor(menuContents?: MenuContents) {
-    for (let i = 0; i < menuContents.elements.length; i += 1) {
-      this.elements.push(new FacebookElement(
-        menuContents[i].content,
-        menuContents[i].imageURL,
-        menuContents[i].title,
-      ));
+    if (menuContents) {
+      for (const element of menuContents.elements) {
+        this.elements.push(new FacebookElement(
+          element.title,
+          element.content,
+          element.imageURL,
+        ));
+      }
     }
   }
 

@@ -10,7 +10,8 @@
       "import-name": false,
       "member-ordering": [true, {"order": "fields-first"}],
       "array-type": [true, "array"],
-      "max-line-length": [true, 120]
+      "max-line-length": [true, 120],
+      "function-name": false
     },
     "rulesDirectory": []
 }

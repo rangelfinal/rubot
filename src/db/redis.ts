@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import * as redis from 'redis';
 
 export default class Redis {
-  public static client = redis.createClient(process.env.REDIS_URL);
+  public static client = redis.createClient(process.env.REDIS_URL as string);
 
   // Converting callback based functions to promise based functions
   // It's better than promisifyAll as Typescript can derive the typings from it
@@ -42,8 +42,19 @@ export default class Redis {
    * @param  {[type]}  key
    * @return {Promise}
    */
-  public static getArray(key): Promise<string[] | number[] | boolean[]> {
+  public static getArray(key: string): Promise<string[] | number[] | boolean[]> {
     return Redis.lrangeAsync(key, 0, -1);
+  }
+
+  public static ObjectToArray(obj: object): string[] {
+    const arr = [];
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        arr.push[key.toString()];
+        arr.push[obj[key].toString()];
+      }
+    }
+    return arr;
   }
 
   /**
@@ -51,8 +62,8 @@ export default class Redis {
    * @param {string} key
    * @param {object} obj
    */
-  public static setShallowObject(key: string, obj: object): void {
-    Redis.client.hmset(key, obj);
+  public static setShallowObject(key: string, obj: object[]): void {
+    Redis.client.hmset(key, Redis.ObjectToArray(obj));
   }
 
   /**
@@ -71,7 +82,7 @@ export default class Redis {
    */
   public static setObjectArray(key: string, arr: object[]): void {
     for (const [index,obj] of arr.entries()) {
-      Redis.client.hmset(key + ':' + index, obj);
+      Redis.client.hmset(key + ':' + index, Redis.ObjectToArray(obj));
       Redis.client.rpush(key, key + ':' + index);
     }
   }
@@ -81,7 +92,7 @@ export default class Redis {
    * @param  {[type]}            key
    * @return {Promise<object[]>}
    */
-  public static getObjectArray(key): Promise<object[]> {
+  public static getObjectArray(key: string): Promise<object[]> {
     return Redis.getArray(key).then((values) => {
       const promises = [];
 

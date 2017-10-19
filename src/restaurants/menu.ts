@@ -73,7 +73,7 @@ export default abstract class Menu {
    */
   public saveToRedis(): void {
     Redis.setValue(this.redisKeyPrefix + 'defined', this.defined);
-    Redis.setObjectArray(this.redisKeyPrefix + 'menuContents', this.menuContents.elements);
+    Redis.setObjectArray(this.redisKeyPrefix + 'menuContents', this.menuContents.elements as object[]);
   }
 
   /**

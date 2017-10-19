@@ -20,8 +20,8 @@ router.post('/fulfillment', (req, res) => {
   if (requestSource === 'telegram') { sender = inputContexts[0].parameters.telegram_chat_id; }
   if (requestSource === 'facebook') { sender = inputContexts[0].parameters.facebook_sender_id;}
 
-  const actionHandlers = {
-    'input.changeNotification': () => {
+  const actionHandlers: object = {
+    'input.changeNotification'(): void {
       Notification.destroy({ where: { target: sender } }).then(() => {
         const promises = [];
         for (const date of parameters.date1) {
@@ -46,19 +46,20 @@ router.post('/fulfillment', (req, res) => {
 
         return Promise.all(promises);
       }).then(() => res.json(Dialogflow.sendResponse('Configurações de notificação salvas no banco de dados!')))
-        .catch((err) => {
-          res.json(Dialogflow.sendResponse('Desculpe, ocorreu um erro quando tentei salvar suas configurações de notificação :('));
+        .catch((err: any) => {
+          res.json(Dialogflow.sendResponse('Desculpe, ocorreu um erro quando tentei salvar suas configurações'
+          + ' de notificação :('));
           logger.error(err);
         });
     },
 
-    'input.changeUniversity': () => {
+    'input.changeUniversity'(): void {
       if (parameters.university !== 'ufscar' || parameters.campus !== 'são carlos') {
         Dialogflow.sendResponse('Desculpe, esse bot só funciona para a UFSCar São Carlos por enquanto :(');
       }
     },
 
-    'input.getMenu': () => {
+    'input.getMenu'(): void {
       const mealType = parameters.mealType;
       if (mealType === 'lunch') {
         lunchMenu.update().then((responseJSON) => {
@@ -73,7 +74,7 @@ router.post('/fulfillment', (req, res) => {
   };
 
   // Run the proper handler function to handle the request from Dialogflow
-  actionHandlers[action]();
+  actionHandlers[action as string]();
 });
 
 export default router;

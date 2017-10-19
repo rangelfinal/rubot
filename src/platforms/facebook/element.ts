@@ -3,7 +3,7 @@ export default class FacebookElement {
   public subtitle?: string;
   public imageURL?: string;
 
-  constructor(title: string, subtitle: string, imageURL: string) {
+  constructor(title: string, subtitle: string, imageURL?: string) {
     this.title = title;
     this.subtitle = subtitle;
     this.imageURL = imageURL;

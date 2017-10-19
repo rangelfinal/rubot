@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import * as request from 'request-promise-native';
 
 /**
  * Retorna a primeira imagem encontrada no Google Imagens
@@ -7,16 +7,16 @@ import request from 'request-promise';
  */
 function getGoogleImage(query) {
   const requestOptions = {
-    uri: 'https://www.googleapis.com/customsearch/v1',
     qs: {
-      q: query,
+      cx: process.env.GOOGLECX,
       gl: 'br',
+      key: process.env.GOOGLEAPIKEY,
       num: 1,
+      q: query,
       safe: 'high',
       searchType: 'image',
-      cx: process.env.GOOGLECX,
-      key: process.env.GOOGLEAPIKEY,
     },
+    uri: 'https://www.googleapis.com/customsearch/v1',
   };
 
   return request(requestOptions).then((json) => {
