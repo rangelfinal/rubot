@@ -1,5 +1,10 @@
-import wiston from 'winston';
+import * as winston from 'winston';
 
-const logger = wiston;
+winston.add(new winston.transports.Console({
+  colorize: true,
+  level: 'debug',
+  prettyPrint: true,
+  timestamp: true,
+}));
 
-export default logger;
+export default winston;
