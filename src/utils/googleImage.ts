@@ -1,4 +1,5 @@
 import * as request from 'request-promise-native';
+import logger from './logger';
 
 /**
  * Retorna a primeira imagem encontrada no Google Imagens
@@ -20,6 +21,7 @@ function getGoogleImage(query) {
   };
 
   return request(requestOptions).then((json) => {
+    logger.debug('Got image from google about ' + query);
     const res = JSON.parse(json);
     return res.items[0].link;
   });

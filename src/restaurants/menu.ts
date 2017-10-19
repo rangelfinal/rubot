@@ -74,6 +74,7 @@ export default abstract class Menu {
    * Save the menu contents to Redis.
    */
   public saveToRedis(): void {
+    logger.debug('Saving to Redis');
     Redis.setValue(this.redisKeyPrefix + 'defined', this.defined);
     Redis.setObjectArray(this.redisKeyPrefix + 'menuContents', this.menuContents.elements as object[]);
   }
@@ -83,6 +84,7 @@ export default abstract class Menu {
    * @return {Promise<boolean>} A promise that returns true if everything went right.
    */
   public getFromRedis(): Promise<boolean> {
+    logger.debug('Getting from Redis');
     const promises = [];
 
     promises.push(
