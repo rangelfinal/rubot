@@ -1,13 +1,16 @@
-import Botly from 'botly';
+import * as Botly from 'botly';
 import { WitBot } from '../../bot/wit';
+import logger from '../../utils/logger';
 
 const botly = new Botly({
   accessToken: process.env.FACEBOOKPAGEACCESSTOKEN, // page access token provided by facebook
-  notificationType: Botly.CONST.REGULAR, // already the default (optional),
   verifyToken:  process.env.FACEBOOKVERIFICATIONTOKEN, // needed when using express
 });
 
 botly.on('message', (sender, message, data) => {
+  logger.debug(sender);
+  logger.debug(message);
+  logger.debug(data);
   return WitBot.runAction(message, 'facebook', sender);
     /**
      * where data can be a text message or an attachment
