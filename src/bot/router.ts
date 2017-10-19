@@ -66,6 +66,7 @@ router.post('/fulfillment', (req, res) => {
       if (mealType === 'lunch') {
         lunchMenu.update().then((responseJSON) => {
           logger.debug(responseJSON.toString());
+          logger.debug(inspect(responseJSON));
           return res.json(responseJSON);
         });
       } else {
