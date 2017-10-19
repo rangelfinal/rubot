@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as moment from 'moment';
+import { inspect } from 'util';
 import { Notification } from '../db';
 import { dinnerMenu, lunchMenu } from '../restaurants/ufscar/ufscar';
 import logger from '../utils/logger';
@@ -70,6 +71,7 @@ router.post('/fulfillment', (req, res) => {
       } else {
         dinnerMenu.update().then((responseJSON) => {
           logger.debug(responseJSON.toString());
+          logger.debug(inspect(responseJSON));
           return res.json(responseJSON);
         });
       }

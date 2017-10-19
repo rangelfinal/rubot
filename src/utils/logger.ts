@@ -37,7 +37,9 @@ const logger = new (winston.Logger)({
   exceptionHandlers: [consoleTransport],
   level: 'debug',
   levels,
-  prettyPrint: true,
+  prettyPrint: (obj) => {
+    return JSON.stringify(obj);
+  },
   timestamp: true,
   transports: [consoleTransport],
 });
