@@ -1,3 +1,4 @@
+import * as util from 'util';
 import MenuContent from '../../restaurants/menuContent';
 import logger from '../../utils/logger';
 import FacebookElement from './element';
@@ -43,19 +44,19 @@ export default class FacebookListTemplate {
     const groupedElements: FacebookElement[] = [];
 
     for (const element of sortedElements) {
-
       if (element.imageURL) {
         // If the element have a image, it gets it's own element
         groupedElements.push(element);
       } else {
-        if (groupedElements.length === 0) {
-          groupedElements.push(element);
-        } else if (groupedElements[groupedElements.length - 1] && // element exists
+        if (groupedElements[groupedElements.length - 1] && // element exists
           groupedElements[groupedElements.length - 1].subtitle && // element has a subtitle
           !groupedElements[groupedElements.length - 1].imageURL && // element doens't have a image
-          groupedElements[groupedElements.length - 1].subtitle.length + element.subtitle.length < 80) {
-          groupedElements[groupedElements.length - 1].title = '/' + element.title;
-          groupedElements[groupedElements.length - 1].subtitle += '\n' + element.subtitle;
+          groupedElements[groupedElements.length - 1].subtitle.length + element.title.length + element.subtitle.length < 80) {
+          groupedElements[groupedElements.length - 1].title += '/' + element.title;
+          groupedElements[groupedElements.length - 1].subtitle += '\n' + element.title + ': ' + element.subtitle;
+        } else {
+          element.subtitle = element.title + ': ' + element.subtitle;
+          groupedElements.push(element);
         }
       }
 
@@ -66,7 +67,7 @@ export default class FacebookListTemplate {
     return {
       attachment: {
         payload: {
-          elements: this.elements.map(el => el.format()),
+          elements: groupedElements.map(el => el.format()),
           template_type: 'list',
           top_element_style: this.topElementStyle,
         },
