@@ -1,4 +1,5 @@
-import MenuContents from '../../restaurants/menuContents';
+import MenuContent from '../../restaurants/menuContent';
+import logger from '../../utils/logger';
 import FacebookElement from './element';
 
 enum TopElementStyleENUM {
@@ -8,16 +9,16 @@ enum TopElementStyleENUM {
 
 export default class FacebookListTemplate {
   public topElementStyle: TopElementStyleENUM = TopElementStyleENUM.large;
-  public elements: FacebookElement[];
+  public elements: FacebookElement[] = [];
 
   /**
    * An optional constructor that creates a list based on the MenuContents
    * @param  {MenuContents} menuContents The menu contents to be included in the list
    * @return {FacebookListTemplate}      A new FacebookListTemplate
    */
-  constructor(menuContents?: MenuContents) {
+  constructor(menuContents?: MenuContent[]) {
     if (menuContents) {
-      for (const element of menuContents.elements) {
+      for (const element of menuContents) {
         this.elements.push(new FacebookElement(
           element.title,
           element.content,
@@ -47,8 +48,12 @@ export default class FacebookListTemplate {
         // If the element have a image, it gets it's own element
         groupedElements.push(element);
       } else {
-        // Else, it get's grouped with another element if it's below the 80 characters limit
-        if (groupedElements[groupedElements.length - 1].subtitle.length + element.subtitle.length < 80) {
+        if (groupedElements.length === 0) {
+          groupedElements.push(element);
+        } else if (groupedElements[groupedElements.length - 1] && // element exists
+          groupedElements[groupedElements.length - 1].subtitle && // element has a subtitle
+          !groupedElements[groupedElements.length - 1].imageURL && // element doens't have a image
+          groupedElements[groupedElements.length - 1].subtitle.length + element.subtitle.length < 80) {
           groupedElements[groupedElements.length - 1].title = '/' + element.title;
           groupedElements[groupedElements.length - 1].subtitle += '\n' + element.subtitle;
         }

@@ -50,8 +50,8 @@ export default class Redis {
     const arr = [];
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        arr.push[key.toString()];
-        arr.push[obj[key].toString()];
+        arr.push(key.toString());
+        arr.push(obj[key].toString());
       }
     }
     return arr;

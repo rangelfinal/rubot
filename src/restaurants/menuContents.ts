@@ -10,7 +10,7 @@ export default class MenuContents {
    * @return {[type]}                 The new MenuContents
    */
   constructor(elements?: MenuContent[]) {
-    this.elements = elements;
+    if (elements) { this.elements = elements; }
   }
 
   /**
@@ -25,7 +25,7 @@ export default class MenuContents {
     const promises = [];
 
     for (const element of this.elements) {
-      if (titleFilter && element.title.indexOf(titleFilter) !== -1) {
+      if (titleFilter && element.title.indexOf(titleFilter) === -1) {
         continue;
       }
 
@@ -33,7 +33,9 @@ export default class MenuContents {
         continue;
       }
 
-      element.getImage();
+      promises.push(
+        element.getImage(),
+      );
     }
 
     // Returns a promise that fulfills when every element got it's image.
@@ -67,7 +69,7 @@ export default class MenuContents {
         continue;
       }
 
-      returnString += element.title + ' ' + element.content;
+      returnString += element.title + ': ' + element.content + '\n';
     }
 
     return returnString;

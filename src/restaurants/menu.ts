@@ -44,11 +44,13 @@ export default abstract class Menu {
   public update(force?: boolean): Promise<IResponseJSON> {
     if (force || !this.defined) {
       logger.info(`Updating ${this.mealType} of ${this.restaurantName}`);
-      this.facebookMenuContents = new FacebookList(this.menuContents);
       return this.updateMenuContents(force).then((menuContents) => {
         this.menuContents = menuContents;
         return this.menuContents.getImages(this.imageTitleFilter, this.imageContentFilter)
-          .then(() => this.format());
+          .then(() => {
+            this.facebookMenuContents = new FacebookList(this.menuContents.elements);
+            return this.format();
+          });
       });
     }
 

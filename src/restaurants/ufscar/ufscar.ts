@@ -8,6 +8,9 @@ import MenuContents from '../menuContents';
 class UFSCarMenu extends Menu {
   public restaurantName: string = 'UFSCarSaoCarlos';
 
+  public imageTitleFilter: string = 'Principal';
+  public imageContentFilter: string = '';
+
   public updateMenuContents(force?: boolean): Promise<MenuContents> {
     return request('http://www2.ufscar.br/restaurantes-universitario').then((body) => {
       const $ = cheerio.load(body);
