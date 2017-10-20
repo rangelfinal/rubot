@@ -40,7 +40,6 @@
     "js-joda": "^1.6.1",
     "moment": "^2.19.1",
     "moment-timezone": "^0.5.13",
-    "node-wit": "^4.3.0",
     "pg": "^7.3.0",
     "pg-hstore": "^2.3.2",
     "redis": "^2.8.0",
