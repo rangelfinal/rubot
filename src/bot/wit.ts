@@ -23,9 +23,17 @@ export interface IWitResponse {
   outcomes: IWitOutcome[];
 }
 
+export interface IWitContext {
+  state: string | string[];
+  reference_time?: string;
+  timezone?: string;
+  entities?: IWitEntities;
+  location?: any;
+}
+
 export class WitBot {
-  public static getOutcomes(message: string) {
-    return wit.message(message).then((data: IWitResponse) => {
+  public static getOutcomes(message: string, context?: IWitContext) {
+    return wit.message(message, context).then((data: IWitResponse) => {
       const outcomes = [];
 
       for (const outcome of data.outcomes) {
@@ -38,8 +46,8 @@ export class WitBot {
     });
   }
 
-  public static getBestOutcome(message: string): Promise<IWitOutcome> {
-    return wit.message(message).then((data: IWitResponse) => {
+  public static getBestOutcome(message: string, context?: IWitContext): Promise<IWitOutcome> {
+    return wit.message(message, context).then((data: IWitResponse) => {
       if (!data || !data.outcomes) { return null; }
 
       return data.outcomes.reduce((bestOutcome: IWitOutcome, outcome: IWitOutcome) => {
@@ -48,9 +56,10 @@ export class WitBot {
     });
   }
 
-  public static runAction(message: string, platform, target): Promise<any> {
-    return WitBot.getBestOutcome(message).then((outcome: IWitOutcome) => {
-      Actions[outcome.intent](outcome.entities, platform, target);
+  public static runAction(message: string, platform, target, context?: IWitContext): Promise<any> {
+    return WitBot.getBestOutcome(message, context).then((outcome: IWitOutcome) => {
+      if (!outcome || !Actions[outcome.intent]) { return Actions.fallback(null, platform, target); }
+      return Actions[outcome.intent](outcome.entities, platform, target);
     });
   }
 }

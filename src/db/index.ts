@@ -1,7 +1,7 @@
-import Notification from './notification';
+import User from './models/user';
 import Redis from './redis';
 import { sequelize, Sequelize } from './sequelize';
 
 export {
-  Notification, sequelize, Sequelize, Redis,
+  User, sequelize, Sequelize, Redis,
 };

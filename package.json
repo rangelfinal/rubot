@@ -37,6 +37,7 @@
     "botly": "^1.4.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
+    "js-joda": "^1.6.1",
     "moment": "^2.19.1",
     "moment-timezone": "^0.5.13",
     "node-wit": "^4.3.0",
