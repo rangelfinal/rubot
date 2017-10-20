@@ -34,7 +34,6 @@
     "@types/winston": "^2.3.6",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
-    "botly": "^1.4.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
     "js-joda": "^1.6.1",
@@ -47,6 +46,7 @@
     "request-promise": "^4.2.2",
     "sequelize": "^4.15.0",
     "typescript": "^2.5.3",
+    "watson-developer-cloud": "^2.41.1",
     "winston": "^2.4.0"
   },
   "devDependencies": {
