@@ -11,7 +11,8 @@
       "member-ordering": [true, {"order": "fields-first"}],
       "array-type": [true, "array"],
       "max-line-length": [true, 120],
-      "function-name": false
+      "function-name": false,
+      "no-console": false
     },
     "rulesDirectory": []
 }

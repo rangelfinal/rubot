@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird';
+import { FacebookMessage, SlackMessage } from 'botkit';
 import * as moment from 'moment';
 import * as util from 'util';
 import { Redis } from '../db';
@@ -74,6 +75,10 @@ export default abstract class Menu {
    * @return {string} the meal type
    */
   public abstract getMealType(): string;
+
+  public abstract facebookMenuContents(): FacebookMessage;
+  public abstract slackMenuContents(): SlackMessage;
+  public abstract telegramMenuContents();
 
   /**
    * Save the menu contents to Redis.

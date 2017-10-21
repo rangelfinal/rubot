@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird';
+import { FacebookMessage, SlackMessage } from 'botkit';
 import * as cheerio from 'cheerio';
 import * as moment from 'moment-timezone';
 import * as request from 'request-promise';
@@ -70,5 +71,53 @@ export default class UFSCarSaoCarlosMenu extends Menu {
       return 'lunch';
     }
     return 'dinner';
+  }
+
+  public facebookMenuContents(): FacebookMessage {
+    const listElements = [];
+
+    for (const menuContent of this.menuContents.elements) {
+      let shouldConcat: boolean;
+
+      const subtitleLenghtIfConcat: number = listElements[listElements.length - 1].subtitle.length +
+        menuContent.title.length + ': '.length +
+        menuContent.content.length;
+
+      shouldConcat = !menuContent.imageURL &&
+        listElements[listElements.length - 1] &&
+        listElements[listElements.length - 1].subtitle &&
+        !listElements[listElements.length - 1].imageURL &&
+        subtitleLenghtIfConcat < 80;
+
+      if (shouldConcat) {
+        listElements[listElements.length - 1].title += '/' + menuContent.title;
+        listElements[listElements.length - 1].subtitle += '\n' + menuContent.title + ': ' + menuContent.content;
+      } else {
+        const newElement: {title: string, subtitle: string, image_url?: string} = {
+          subtitle: menuContent.content,
+          title: menuContent.title,
+        };
+
+        if (menuContent.imageURL) { newElement.image_url = menuContent.imageURL; }
+
+        listElements.push(newElement);
+
+        if (listElements.length >= 4) { break; }
+      }
+    }
+
+    return {
+      attachment: {
+        payload: {
+          elements: listElements,
+          template_type: 'list',
+        },
+        type: 'template',
+      },
+    };
+  }
+
+  public slackMenuContents(): SlackMessage {
+    return { text: this.menuContents.toString() };
   }
 }
