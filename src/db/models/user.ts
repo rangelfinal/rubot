@@ -1,6 +1,20 @@
 import { sequelize, Sequelize } from '../sequelize';
 
-const user = sequelize.define('user', {
+interface IUser {
+  defaultRestaurant?: string;
+  platform: string;
+  target: string;
+}
+
+interface IUserInstance extends Sequelize.Instance<IUser>, IUser {}
+
+interface INotification {
+  daysOfTheWeek: number[];
+  mealType: string;
+  restaurant: string;
+}
+
+const User = sequelize.define<IUserInstance, IUser>('user', {
   defaultRestaurant: {
     type: Sequelize.STRING,
   },
@@ -16,7 +30,7 @@ const user = sequelize.define('user', {
   },
 });
 
-const notification = sequelize.define('notification', {
+const Notification = sequelize.define<Sequelize.Instance<INotification>, INotification>('notification', {
   daysOfTheWeek: {
     type: Sequelize.ARRAY(Sequelize.INTEGER),
   },
@@ -30,6 +44,6 @@ const notification = sequelize.define('notification', {
   },
 });
 
-user.hasMany(notification);
+User.hasMany(Notification);
 
-export default user;
+export default User;
